@@ -1,6 +1,5 @@
 import cv2
 import os
-import tensorflow as tf
 import numpy as np
 import streamlit as st
 from tensorflow.keras.models import load_model
@@ -44,12 +43,13 @@ def process_mask_image(image_path):
             if prediction < 0.5:
                 label = "Mask"
                 color = (0, 255, 0)
-                prob = prediction * 100
+                prob = (1 - prediction) * 100                
 
             else:
                 label = "No Mask"
-                color = (0, 0, 255) 
-                prob = (1 - prediction) * 100                
+                color = (0, 0, 255)
+                prob = prediction * 100
+
                 
             text = f"{label}: {prob:.1f}%"
             cv2.putText(image, text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
@@ -58,10 +58,8 @@ def process_mask_image(image_path):
         except Exception as e:
             continue
 
-    # تبدیل نهایی عکس به فرمتی که استریم‌لیت بتونه نشون بده
     RGB_img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     
-    # اینجا عکس پردازش شده رو برمی‌گردونیم تا پایین بتونیم نشونش بدیم
     return RGB_img
 
 def mask_detection():
